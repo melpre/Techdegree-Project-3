@@ -202,34 +202,50 @@ const validateEmail = function () {
 //Validate ACTIVITY
 const validateActivity = function () {
     let submitActivity;
-    const $checkbox = $("[type=checkbox]");
     //Loop through ALL checkbox elements
-    $checkbox.each(function () {
-        if ($checkbox.prop("checked")) {
-            submitActivity = true;
+    checkboxes.each(function () {
+        if (totalActivityCost === 0) {
+            //Add error indicator
+            $("p").after($("<span></span>").attr("id", "error"));
+            $("span#error").text("Please fill in required field").css("color", "red");
+            submitActivity = false;
             return submitActivity;
         } else {
-            submitActivity = false;
+            //Remove error indicator
+            $("span#error").hide();
+            submitActivity = true;
             return submitActivity;
         };
     });
-    if (submitActivity === false) {
-        //Add error indicator
-        $("p").after($("<span></span>").attr("id", "error"));
-        $("span#error").text("Please fill in required field").css("color", "red");
-    } else {
-        //Remove error indicator
-        $("span#error").hide();
-    };
 };
 
 //Create function to validate CREDIT CARD info IF payment option is selected
+//Validate CREDIT CARD number
+const validateCreditCard = function () {
+    let submitCCNum;
+    let inputCCNum = $("input#cc-num").val;
+    const regEx = /^\d{4}\s?\d{4}\s?\d{4}\s?(\d{4})?$/;
+    if (inputCCNum !== regEx || inputCCNum.length < 1) {
+        //Add error indicator
+        errorIndicator("input#cc-num");
+        submitCCNum = false;
+    } else {
+        //Remove error indicator
+        $("span#error").hide();
+        submitCCNum = true;
+        return submitCCNum;
+    }; 
+};
 
-    //Credit card
+//Validate ZIP CODE
+// const validateZipCode = function () {
 
-    //Zip code
+// };
 
-    //CVV
+//Validate CVV
+// const validateCVV = function () {
+
+// };
 
 
 
@@ -239,4 +255,11 @@ $("form").on("submit", function (event) {
     validateName();
     validateEmail();
     validateActivity();
+    $("select#payment").on ("change", function (event) {
+        if ($(event.target).val() === "Credit Card") {
+            validateCreditCard();
+            // validateZipCode();
+            // validateCVV();
+        };
+    });
 });
