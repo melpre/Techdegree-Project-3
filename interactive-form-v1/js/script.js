@@ -218,9 +218,9 @@ const validateActivity = function () {
 //Validate CREDIT CARD number
 let submitCCNum;
 let inputCCNum = document.getElementById("cc-num").value;
-const regEx = /^\d{3,4}\s?\d{3,4}\s?\d{3,4}\s?(\d{4})?$/;
-let validCCNum = regEx.test(inputCCNum);
 const validateCCNum = function () {
+    const regEx = /^\d{3,4}\s?\d{3,4}\s?\d{3,4}\s?(\d{4})?$/;
+    let validCCNum = regEx.test(inputCCNum);
     if (inputCCNum === validCCNum) {
         //Remove error indicator
         $("input#cc-num").removeClass("error");
@@ -237,9 +237,9 @@ const validateCCNum = function () {
 //Validate ZIP CODE
 let submitCCzip;
 let $inputCCzip = $("input#zip").val();
-const regEx = /^\d{5}$/;
-let validCCzip = regEx.test($inputCCzip);
 const validateZipCode = function () {
+    const regEx = /^\d{5}$/;
+    let validCCzip = regEx.test($inputCCzip);
     if ($inputCCzip !== validCCzip || $inputCCzip.length < 1) {
         //Add error indicator
         errorIndicator("input#zip");
@@ -255,9 +255,9 @@ const validateZipCode = function () {
 //Validate CVV
 let submitCVV;
 let $inputCVV = $("input#cvv").val();
-const regEx = /^\d{3}$/;
-let validCVV = regEx.test($inputCVV);
 const validateCVV = function () {
+    const regEx = /^\d{3}$/;
+    let validCVV = regEx.test($inputCVV);
     if ($inputCVV !== validCVV || $inputCVV.length < 1) {
         //Add error indicator
         errorIndicator("input#cvv");
