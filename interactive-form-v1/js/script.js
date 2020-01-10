@@ -83,7 +83,7 @@ const checkboxes = $("[type=checkbox]");
 
 //Update and Display TOTAL Activity Cost
 //Create DOM element and append to '.activities'
-let p = $("<p></p>").appendTo(".activities");
+let p = $("<p></p>").appendTo(".activities").attr("id", "activity");
 let totalActivityCost = 0;
 
 //Initiate change event listener on parent fieldset "Activities" element
@@ -160,16 +160,16 @@ $("select#payment").on ("change", function(event) {
 
 //Error message function
 const errorIndicator = function (element) {
-    $(element).addClass("error");
+    $(element).attr("class", "error");
     $(element).after($("<span></span>").attr("id", "error"));
     $("span#error").text("Please fill in required field").css("color", "red");
 };
 
 //Validate NAME
+let submitName;
+let inputName = document.getElementById("name").value;
 const validateName = function () {
-    let $inputName = $("input#name").val();
-    let submitName;
-    if ($inputName.length < 1) {
+    if (inputName.length < 1) {
         //Add error indicator and return false
         errorIndicator("input#name");
         submitName = false;
@@ -182,11 +182,11 @@ const validateName = function () {
 };
 
 //Validate EMAIL
+let submitEmail;
 const validateEmail = function () {
     let $inputEmail = $("input#mail").val();
     const regEx = /^\S+@\S+$/;
     let validEmail = regEx.test($inputEmail);
-    let submitEmail;
     if ($inputEmail.length < 1 || !validEmail) {
         //Add error indicator and return false
         errorIndicator("input#mail");
@@ -200,66 +200,121 @@ const validateEmail = function () {
 };
 
 //Validate ACTIVITY
+let submitActivity;
 const validateActivity = function () {
-    let submitActivity;
-    //Loop through ALL checkbox elements
-    checkboxes.each(function () {
-        if (totalActivityCost === 0) {
-            //Add error indicator
-            $("p").after($("<span></span>").attr("id", "error"));
-            $("span#error").text("Please fill in required field").css("color", "red");
-            submitActivity = false;
-            return submitActivity;
-        } else {
-            //Remove error indicator
-            $("span#error").hide();
-            submitActivity = true;
-            return submitActivity;
-        };
-    });
+    if (totalActivityCost === 0) {
+        //Add error indicator and return false
+        errorIndicator("p#activity");
+        submitActivity = false;
+    } else {
+        //Remove error indicator and return true
+        $("p#activity").removeClass("error");
+        $("span#error").hide();
+        submitActivity = true;
+    };
 };
 
 //Create function to validate CREDIT CARD info IF payment option is selected
 //Validate CREDIT CARD number
-const validateCreditCard = function () {
-    let submitCCNum;
-    let inputCCNum = $("input#cc-num").val;
-    const regEx = /^\d{4}\s?\d{4}\s?\d{4}\s?(\d{4})?$/;
-    if (inputCCNum !== regEx || inputCCNum.length < 1) {
+let submitCCNum;
+let inputCCNum = document.getElementById("cc-num").value;
+const regEx = /^\d{3,4}\s?\d{3,4}\s?\d{3,4}\s?(\d{4})?$/;
+let validCCNum = regEx.test(inputCCNum);
+const validateCCNum = function () {
+    if (inputCCNum === validCCNum) {
+        //Remove error indicator
+        $("input#cc-num").removeClass("error");
+        $("span#error").hide();
+        submitCCNum = true;
+    } else {
         //Add error indicator
         errorIndicator("input#cc-num");
         submitCCNum = false;
-    } else {
-        //Remove error indicator
-        $("span#error").hide();
-        submitCCNum = true;
-        return submitCCNum;
     }; 
 };
 
-//Validate ZIP CODE
-// const validateZipCode = function () {
 
-// };
+//Validate ZIP CODE
+let submitCCzip;
+let $inputCCzip = $("input#zip").val();
+const regEx = /^\d{5}$/;
+let validCCzip = regEx.test($inputCCzip);
+const validateZipCode = function () {
+    if ($inputCCzip !== validCCzip || $inputCCzip.length < 1) {
+        //Add error indicator
+        errorIndicator("input#zip");
+        submitCCzip = false;
+    } else {
+        //Remove error indicator
+        $("input#zip").removeClass("error");
+        $("span#error").hide();
+        submitCCzip = true;
+    };
+};
 
 //Validate CVV
-// const validateCVV = function () {
+let submitCVV;
+let $inputCVV = $("input#cvv").val();
+const regEx = /^\d{3}$/;
+let validCVV = regEx.test($inputCVV);
+const validateCVV = function () {
+    if ($inputCVV !== validCVV || $inputCVV.length < 1) {
+        //Add error indicator
+        errorIndicator("input#cvv");
+        submitCVV = false;
+    } else {
+        //Remove error indicator
+        $("input#cvv").removeClass("error");
+        $("span#error").hide();
+        submitCVV = true;
+    };
+};
 
+// //Master Validation Function
+// //If ALL validation checks are true, return true
+// let submitCreditCard;
+// let validateAll;
+// const masterValidate = function () {
+//     validateName();
+//     validateEmail();
+//     validateActivity();
+//     //Payment Method Change Listener
+//     //If credit card payment is selected
+//     $("select#payment").on ("change", function (event) {
+//         if ($(event.target).val() === "Credit Card") {
+//             validateCCNum();
+//             validateZipCode();
+//             validateCVV();
+//             //Master Credit Card Validation Function
+//             //When credit card is selected and ALL checks are true
+//             if (submitCCNum === true && submitCCzip === true && submitCVV === true) {
+//                 submitCreditCard = true;
+//             } else {
+//                 submitCreditCard = false;
+//             };    
+//         };
+//     });
+//     if (submitName === true && submitEmail === true && submitActivity === true) {
+//         validateAll = true;
+//     } else {
+//         validateAll = false;
+//     };
 // };
 
 
-
-//Submit Event Listener
+//Submit Listener
 $("form").on("submit", function (event) {
     event.preventDefault();
-    validateName();
-    validateEmail();
-    validateActivity();
-    $("select#payment").on ("change", function (event) {
-        if ($(event.target).val() === "Credit Card") {
-            validateCreditCard();
-            // validateZipCode();
-            // validateCVV();
-        };
-    });
+    validateCCNum();
+    console.log(inputCCNum);
+    console.log(submitCCNum);
+    // masterValidate();
+    // if (validateAll === false) {
+    //     event.preventDefault();
+    // } else if (submitCreditCard === false) {
+    //     event.preventDefault();
+    // };
 });
+
+
+
