@@ -3,13 +3,18 @@ Treehouse Techdegree:
 FSJS project 3 - Interactive Form
 ******************************************/
 
+/***** EXTRA CREDIT NOTES *****/
+// 1. Line 45-57: Initially hide "color" label and color select menu elements until "design" option is selected
+// 2. Line 257-282: Conditional error message for credit card validation function
+// 3. Line 380-383: Real-time error message for email input field
 
-//NAME
+
+/********* NAME ***********/
 // On page load, cursor appears in 'Name' field
 $("#name").focus();
 
 
-//JOB ROLE
+/******** JOB ROLE *********/
 //Initially hide "Other Job Role" input field and show when JavaScript is disabled
 $("#other-title").hide();
 
@@ -25,16 +30,22 @@ $("select#title").on("change", function(event){
 });
 
 
-//T-SHIRT INFO
+/******* T-SHIRT INFO *******/
+
 const $designSelectElement = $("select#design");
 const $colorSelectElement = $("select#color");
 const $designOptions = $("select#design option");
 const $colorOptions = $("select#color option");
 const $themeOption = $("select#design option").eq(0);
 const $selectShirtTheme = $("<option>Please select a T-shirt theme</option>");
+const $colorLabel = $("label[for='color']");
 
 //Display 'Select theme' option as default from 'Theme menu'
 $themeOption.attr("selected", true);
+
+//Initially hide 'Color' label and Color 'select' drop down
+$colorLabel.hide();
+$colorSelectElement.hide();
 
 //Update the 'Color' option to read 'Please select a T-shirt theme'
 $colorSelectElement.prepend($selectShirtTheme);
@@ -43,6 +54,9 @@ $colorOptions.hide();
 
 //Initiate change event listener on 'Theme menu'
 $designSelectElement.on("change", (function(event) {
+    //Display 'Color' label and 'Color' select drop down
+    $colorLabel.show();
+    $colorSelectElement.show();
     //When one of two themes is selected, only appropriate colors will show.
     if ($(event.target).val() === "js puns") {
         //Disable 'Select theme' option from 'Theme menu'
@@ -75,7 +89,8 @@ $designSelectElement.on("change", (function(event) {
 //console.log($colorOptions);
 
 
-//ACTIVITY REGISTRATION
+/***** ACTIVITY REGISTRATION *****/
+
 //Disable  Conflicting Activities
 //Declare variable to hold ALL checkboxes
 const checkboxes = $("[type=checkbox]");
@@ -132,7 +147,8 @@ $(".activities").on ("change", (function (event) {
 }));
 
 
-//PAYMENT
+/******** PAYMENT DISPLAY ********/
+
 //On page load, hide “Select Payment Method” `option` in drop down menu & only show Credit Card section
 $("select#payment option").eq(0).hide();
 $("div#paypal").hide();
@@ -156,165 +172,237 @@ $("select#payment").on ("change", function(event) {
 });
 
 
-//FORM VALIDATION
+/******** FORM VALIDATION ********/
 
-//Error message function
-const errorIndicator = function (element) {
-    $(element).attr("class", "error");
-    $(element).after($("<span></span>").attr("id", "error"));
-    $("span#error").text("Please fill in required field").css("color", "red");
-};
-
-//Validate NAME
+//Validate Name
 let submitName;
-let inputName = document.getElementById("name").value;
+let inputName;
 const validateName = function () {
-    if (inputName.length < 1) {
-        //Add error indicator and return false
-        errorIndicator("input#name");
-        submitName = false;
-    } else {
+    const errorIndicatorName = function () {
+        $("input#name").attr("class", "error");
+        $("input#name").after($("<span></span>").attr("id", "error-name"));
+        $("span#error-name").text("Please provide name").css("color", "red");
+    };
+    let inputNameVal = document.getElementById("name").value;
+    inputName = inputNameVal;
+    if (inputName.length > 1) {
         //Remove error indicator and return true
         $("input#name").removeClass("error");
-        $("span#error").hide();
+        $("span#error-name").hide();
         submitName = true;
+    } else {
+        //Add error indicator and return false
+        errorIndicatorName();
+        submitName = false;
     };
 };
 
-//Validate EMAIL
+//Validate Email
 let submitEmail;
+let inputEmail;
 const validateEmail = function () {
-    let $inputEmail = $("input#mail").val();
-    const regEx = /^\S+@\S+$/;
-    let validEmail = regEx.test($inputEmail);
-    if ($inputEmail.length < 1 || !validEmail) {
-        //Add error indicator and return false
-        errorIndicator("input#mail");
-        submitEmail = false;
-    } else {
+    const errorIndicatorMail = function () {
+        $("input#mail").attr("class", "error");
+        $("input#mail").after($("<span></span>").attr("id", "error-mail"));
+        $("span#error-mail").text("Please provide correct email address").css("color", "red");
+    };
+    let inputEmailVal = document.getElementById("mail").value;
+    inputEmail = inputEmailVal;
+    const regEx = /^\S+@\S+\.\S+$/;
+    let validEmail = regEx.test(inputEmail);
+    if (validEmail) {
         //Remove error indicator and return true
         $("input#mail").removeClass("error");
-        $("span#error").hide();
+        $("span#error-mail").hide();
         submitEmail = true;
+    } else {
+        //Add error indicator and return false
+        errorIndicatorMail();
+        submitEmail = false;
     };
 };
 
-//Validate ACTIVITY
+//Validate Activity
 let submitActivity;
 const validateActivity = function () {
-    if (totalActivityCost === 0) {
-        //Add error indicator and return false
-        errorIndicator("p#activity");
-        submitActivity = false;
-    } else {
+    const errorIndicatorActivity = function () {
+        $("p#activity").attr("class", "error");
+        $("p#activity").after($("<span></span>").attr("id", "error-activity"));
+        $("span#error-activity").text("Please check activity").css("color", "red");
+    };
+    if (totalActivityCost !== 0) {
         //Remove error indicator and return true
         $("p#activity").removeClass("error");
-        $("span#error").hide();
+        $("span#error-activity").hide();
         submitActivity = true;
+    } else {
+        //Add error indicator and return false
+        errorIndicatorActivity();
+        submitActivity = false;
     };
 };
 
-//Create function to validate CREDIT CARD info IF payment option is selected
-//Validate CREDIT CARD number
+//Validate Credit Card #
 let submitCCNum;
-let inputCCNum = document.getElementById("cc-num").value;
+let inputCCNumVal;
 const validateCCNum = function () {
+    let inputCCNum = document.getElementById("cc-num").value;
+    inputCCNumVal = inputCCNum;
     const regEx = /^\d{3,4}\s?\d{3,4}\s?\d{3,4}\s?(\d{4})?$/;
-    let validCCNum = regEx.test(inputCCNum);
-    if (inputCCNum === validCCNum) {
-        //Remove error indicator
-        $("input#cc-num").removeClass("error");
-        $("span#error").hide();
-        submitCCNum = true;
-    } else {
+    let validCCNum = regEx.test(inputCCNumVal);
+    const errorIndicatorCC = function () {
+        $("input#cc-num").attr("class", "error");
+        $("input#cc-num").after($("<span></span>").attr("id", "error-cc"));
+        $("span#error-cc").text("Please provide valid credit card").css("color", "red");
+    };
+    const altErrorIndicatorCC = function () {
+        $("input#cc-num").attr("class", "error");
+        $("input#cc-num").after($("<span></span>").attr("id", "error-altcc"));
+        $("span#error-altcc").text("Please provide credit card number between 13-16 digits").css("color", "red");
+    };
+    if (inputCCNumVal.length === 0) {
         //Add error indicator
-        errorIndicator("input#cc-num");
+        errorIndicatorCC();
+        $("span#error-altcc").hide();
         submitCCNum = false;
-    }; 
+    } else if (inputCCNumVal.length < 13) {
+        // Add alternative error indicator
+        altErrorIndicatorCC();
+        $("span#error-cc").hide();
+        submitCCNum = false;
+    } else if (inputCCNumVal.length > 16) {
+        // Add alternative error indicator
+        altErrorIndicatorCC();
+        $("span#error-cc").hide();
+        submitCCNum = false;
+    } else {
+        //Remove error indicator(s)
+        $("input#cc-num").removeClass("error");
+        $("span#error-cc").hide();
+        $("span#error-altcc").hide();
+        submitCCNum = true;
+    };
 };
 
-
-//Validate ZIP CODE
+//Validate Zip Code
 let submitCCzip;
-let $inputCCzip = $("input#zip").val();
+let inputCCZipCode;
 const validateZipCode = function () {
+    let inputCCzip = document.getElementById("zip").value;
+    inputCCZipCode = inputCCzip;
     const regEx = /^\d{5}$/;
-    let validCCzip = regEx.test($inputCCzip);
-    if ($inputCCzip !== validCCzip || $inputCCzip.length < 1) {
-        //Add error indicator
-        errorIndicator("input#zip");
-        submitCCzip = false;
-    } else {
+    let validCCzip = regEx.test(inputCCZipCode);
+    const errorIndicatorCCZip = function () {
+        $("input#zip").attr("class", "error");
+        $("input#zip").after($("<span></span>").attr("id", "error-zip"));
+        $("span#error-zip").text("Please provide valid zip code").css("color", "red");
+    };
+    if (validCCzip) {
         //Remove error indicator
         $("input#zip").removeClass("error");
-        $("span#error").hide();
+        $("span#error-zip").hide();
         submitCCzip = true;
+    } else {
+        //Add error indicator
+        errorIndicatorCCZip();
+        submitCCzip = false;
     };
 };
 
 //Validate CVV
 let submitCVV;
-let $inputCVV = $("input#cvv").val();
+let inputccCVV;
 const validateCVV = function () {
+    let inputCVV = document.getElementById("cvv").value;
+    inputccCVV = inputCVV;
     const regEx = /^\d{3}$/;
-    let validCVV = regEx.test($inputCVV);
-    if ($inputCVV !== validCVV || $inputCVV.length < 1) {
-        //Add error indicator
-        errorIndicator("input#cvv");
-        submitCVV = false;
-    } else {
+    let validCVV = regEx.test(inputccCVV);
+    const errorIndicatorCVV = function () {
+        $("input#cvv").attr("class", "error");
+        $("input#cvv").after($("<span></span>").attr("id", "error-cvv"));
+        $("span#error-cvv").text("Please provide valid CVV code").css("color", "red");
+    };
+    if (validCVV) {
         //Remove error indicator
         $("input#cvv").removeClass("error");
-        $("span#error").hide();
+        $("span#error-cvv").hide();
         submitCVV = true;
+    } else {
+        //Add error indicator
+        errorIndicatorCVV();
+        submitCVV = false;
     };
 };
 
-// //Master Validation Function
-// //If ALL validation checks are true, return true
-// let submitCreditCard;
-// let validateAll;
-// const masterValidate = function () {
-//     validateName();
-//     validateEmail();
-//     validateActivity();
-//     //Payment Method Change Listener
-//     //If credit card payment is selected
-//     $("select#payment").on ("change", function (event) {
-//         if ($(event.target).val() === "Credit Card") {
-//             validateCCNum();
-//             validateZipCode();
-//             validateCVV();
-//             //Master Credit Card Validation Function
-//             //When credit card is selected and ALL checks are true
-//             if (submitCCNum === true && submitCCzip === true && submitCVV === true) {
-//                 submitCreditCard = true;
-//             } else {
-//                 submitCreditCard = false;
-//             };    
-//         };
-//     });
-//     if (submitName === true && submitEmail === true && submitActivity === true) {
-//         validateAll = true;
-//     } else {
-//         validateAll = false;
-//     };
-// };
+//Validate ALL Credit Card Function
+let submitCreditCard;
+const validateAllCreditCard = function () {
+    validateCCNum();
+    validateZipCode();
+    validateCVV();       
+    if (submitCCNum === true && submitCCzip === true && submitCVV === true) {
+        submitCreditCard = true;
+    } else {
+        submitCreditCard = false;
+    };
+};
 
+//Validate ALL Function
+//If ALL validation checks are true, return true
+let submitAll;
+const masterValidate = function () {
+    validateName();
+    validateEmail();
+    validateActivity();
+    //If select#payment option is Credit Card, do credit card validation checks
+    if ($("select#payment").val() === "Credit Card") {
+        validateAllCreditCard();
+    };
+    if (submitName === true && submitEmail === true && submitActivity === true) {
+        submitAll = true;
+    } else {
+        submitAll = false;
+    };
+};
+
+
+/******** EVENT LISTENERS ********/
+
+//Payment Method Listener
+//If credit card payment is selected
+$("select#payment").on ("change", function (event) {
+    if ($(this).val() === "Credit Card") {
+    validateAllCreditCard();
+    };        
+});
+
+//Keydown Listener on Email Input
+const emailField = document.getElementById("mail");
+emailField.addEventListener ("keydown", (event) => {
+    $("span#error-mail").remove();
+    validateEmail();
+});
 
 //Submit Listener
 $("form").on("submit", function (event) {
-    event.preventDefault();
-    validateCCNum();
-    console.log(inputCCNum);
-    console.log(submitCCNum);
-    // masterValidate();
-    // if (validateAll === false) {
-    //     event.preventDefault();
-    // } else if (submitCreditCard === false) {
-    //     event.preventDefault();
-    // };
+    $("span#error-name").remove();
+    $("span#error-mail").remove();
+    $("span#error-activity").remove();
+    $("span#error-cc").remove();
+    $("span#error-altcc").remove();
+    $("span#error-zip").remove();
+    $("span#error-cvv").remove();
+    masterValidate();
+    //If ALL meet credit card checks, return true
+    if (submitAll === false || submitCreditCard === false) {
+        event.preventDefault();
+    };
 });
+
+
+
+/********** END OF PROGRAM **********/
+
 
 
 
