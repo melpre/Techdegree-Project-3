@@ -4,9 +4,9 @@ FSJS project 3 - Interactive Form
 ******************************************/
 
 /***** EXTRA CREDIT NOTES *****/
-// 1. Line 45-57: Initially hide "color" label and color select menu elements until "design" option is selected
-// 2. Line 257-282: Conditional error message for credit card validation function
-// 3. Line 380-383: Real-time error message for email input field
+// 1. Line 46-59: Initially hide "color" label and color select menu elements until "design" option is selected
+// 2. Line 259-285: Conditional error message for credit card validation function
+// 3. Line 372-377: Real-time error message for email input field
 
 
 /********* NAME ***********/
@@ -151,6 +151,7 @@ $(".activities").on ("change", (function (event) {
 
 //On page load, hide “Select Payment Method” `option` in drop down menu & only show Credit Card section
 $("select#payment option").eq(0).hide();
+$("select#payment option").eq(1).attr("selected", true);
 $("div#paypal").hide();
 $("div#bitcoin").hide();
 //Get value of payment select element, and if it’s = ‘credit card’, set the credit card payment section to show, and set the other two options to hide.
@@ -265,12 +266,12 @@ const validateCCNum = function () {
         errorIndicatorCC();
         $("span#error-altcc").hide();
         submitCCNum = false;
-    } else if (inputCCNumVal.length < 13) {
+    } else if ( !validCCNum || inputCCNumVal.length < 13) {
         // Add alternative error indicator
         altErrorIndicatorCC();
         $("span#error-cc").hide();
         submitCCNum = false;
-    } else if (inputCCNumVal.length > 16) {
+    } else if ( !validCCNum || inputCCNumVal.length > 16) {
         // Add alternative error indicator
         altErrorIndicatorCC();
         $("span#error-cc").hide();
@@ -368,17 +369,9 @@ const masterValidate = function () {
 
 /******** EVENT LISTENERS ********/
 
-//Payment Method Listener
-//If credit card payment is selected
-$("select#payment").on ("change", function (event) {
-    if ($(this).val() === "Credit Card") {
-    validateAllCreditCard();
-    };        
-});
-
-//Keydown Listener on Email Input
+//Keyup Listener on Email Input
 const emailField = document.getElementById("mail");
-emailField.addEventListener ("keydown", (event) => {
+emailField.addEventListener ("keyup", (event) => {
     $("span#error-mail").remove();
     validateEmail();
 });
